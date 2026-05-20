@@ -10,7 +10,7 @@ export const SITE = {
   domain: "getnovaline.com",
   url: "https://getnovaline.com",
   email: "getnovaline@gmail.com",
-  twitter: "https://x.com/your_handle_here", // TODO: replace with actual handle URL
+  twitter: "https://x.com/getnovaline",
 };
 
 export const PAYMENT_LINKS = {
@@ -20,9 +20,11 @@ export const PAYMENT_LINKS = {
 
 export const TRACKER_URL = "https://docs.google.com/spreadsheets/d/188qJpTJqy8753DCo1E04tfJu0-R4nC6XRCdoYSj06UQ/edit?usp=sharing"; // public bet tracker
 
+// Fallback stats used if the auto-fetch from Google Sheets fails or env var isn't set.
+// To enable auto-pull: set NEXT_PUBLIC_STATS_CSV_URL env var in Vercel to the published
+// CSV URL of your Summary tab. See src/lib/stats.ts for parser details.
+// To update manually: just change these numbers and commit.
 export const STATS = {
-  // Hardcoded for now — update manually as your tracker grows.
-  // Later, could fetch live from the sheet via API.
   bets: 209,
   roi: 10.24,
   profit: 610,

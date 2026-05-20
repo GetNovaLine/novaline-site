@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SITE } from "@/lib/config";
 
 const navLinks = [
@@ -13,7 +14,7 @@ export default function Nav() {
     <header className="sticky top-0 z-50 w-full border-b border-card-border bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-          <span className="inline-block h-2 w-2 rounded-full bg-accent" />
+          <Image src="/logo.png" alt="NovaLine" width={28} height={28} className="rounded-md" priority />
           {SITE.name}
         </Link>
         <nav className="hidden items-center gap-8 md:flex">

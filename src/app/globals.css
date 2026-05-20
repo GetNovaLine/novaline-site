@@ -6,11 +6,11 @@
   --card: #111111;
   --card-border: #1f1f1f;
   --muted: #71717a;
-  --accent: #10b981;
-  --accent-hover: #059669;
-  --strong: #22c55e;
-  --mixed: #eab308;
-  --weak: #ef4444;
+  --accent: #a855f7;       /* purple-500 — brand accent */
+  --accent-hover: #9333ea; /* purple-600 — hover state */
+  --strong: #22c55e;       /* green — kept for STRONG edge quality semantics */
+  --mixed: #eab308;        /* yellow — MIXED */
+  --weak: #ef4444;         /* red — WEAK */
 }
 
 @theme inline {
@@ -39,6 +39,6 @@ body {
 /* Subtle radial gradient at the top of hero for visual depth */
 .bg-hero-gradient {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.15), transparent 70%),
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(168, 85, 247, 0.18), transparent 70%),
     var(--background);
 }

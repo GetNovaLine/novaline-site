@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { PAYMENT_LINKS, SITE, STATS, BOOKS, SPORTS, TRACKER_URL } from "@/lib/config";
+import { PAYMENT_LINKS, BOOKS, SPORTS, TRACKER_URL } from "@/lib/config";
+import { fetchStats } from "@/lib/stats";
 
-export default function Home() {
+export default async function Home() {
+  const STATS = await fetchStats();
   return (
     <>
       {/* Hero */}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SITE, TRACKER_URL } from "@/lib/config";
 
 export default function Footer() {
@@ -8,7 +9,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
             <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-              <span className="inline-block h-2 w-2 rounded-full bg-accent" />
+              <Image src="/logo.png" alt="NovaLine" width={28} height={28} className="rounded-md" />
               {SITE.name}
             </Link>
             <p className="mt-3 text-sm text-muted">{SITE.tagline}</p>

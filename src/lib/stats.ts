@@ -61,7 +61,7 @@ function parseCsv(csv: string): Stats {
 
     if (label.includes("total bets") || label.includes("bets settled")) {
       stats.bets = Math.round(value);
-    } else if (label === "roi" || label.includes(" roi") || label.includes("roi ")) {
+    } else if (label.includes("roi")) {
       stats.roi = value;
     } else if (label.includes("total profit")) {
       stats.profit = Math.round(value);

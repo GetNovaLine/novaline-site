@@ -47,7 +47,7 @@ export default async function Home() {
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             <Stat label="Bets settled" value={STATS.bets.toString()} />
             <Stat label="ROI" value={`${STATS.roi.toFixed(2)}%`} accent />
-            <Stat label="Profit" value={`+$${STATS.profit.toLocaleString()}`} />
+            <Stat label="Units up" value={`+${STATS.unitsUp}u`} />
             <Stat label="Days tracked" value={STATS.daysActive.toString()} />
           </div>
           <p className="mt-6 text-center text-xs text-muted">

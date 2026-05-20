@@ -28,6 +28,7 @@ export const STATS = {
   bets: 209,
   roi: 10.24,
   profit: 610,
+  bankroll: 2300, // used only to compute units up — never displayed
   daysActive: 26,
 };
 

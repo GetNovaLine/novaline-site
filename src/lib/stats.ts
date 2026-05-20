@@ -20,11 +20,16 @@
 
 import { STATS as FALLBACK } from "./config";
 
-export type Stats = typeof FALLBACK;
+export type Stats = typeof FALLBACK & { unitsUp: number };
+
+function computeUnits(s: typeof FALLBACK): number {
+  if (s.bankroll <= 0) return 0;
+  return Math.round((s.profit / s.bankroll) * 100);
+}
 
 export async function fetchStats(): Promise<Stats> {
   const url = process.env.NEXT_PUBLIC_STATS_CSV_URL;
-  if (!url) return FALLBACK;
+  if (!url) return { ...FALLBACK, unitsUp: computeUnits(FALLBACK) };
 
   try {
     const res = await fetch(url, {
@@ -32,18 +37,19 @@ export async function fetchStats(): Promise<Stats> {
     });
     if (!res.ok) {
       console.error("Stats CSV fetch returned non-OK:", res.status);
-      return FALLBACK;
+      return { ...FALLBACK, unitsUp: computeUnits(FALLBACK) };
     }
     const csv = await res.text();
-    return parseCsv(csv);
+    const parsed = parseCsv(csv);
+    return { ...parsed, unitsUp: computeUnits(parsed) };
   } catch (err) {
     console.error("Stats CSV fetch failed, using fallback:", err);
-    return FALLBACK;
+    return { ...FALLBACK, unitsUp: computeUnits(FALLBACK) };
   }
 }
 
-function parseCsv(csv: string): Stats {
-  const stats: Stats = { ...FALLBACK };
+function parseCsv(csv: string): typeof FALLBACK {
+  const stats: typeof FALLBACK = { ...FALLBACK };
   const lines = csv.trim().split(/\r?\n/);
 
   for (const line of lines) {
@@ -65,6 +71,8 @@ function parseCsv(csv: string): Stats {
       stats.roi = value;
     } else if (label.includes("total profit")) {
       stats.profit = Math.round(value);
+    } else if (label.includes("bankroll")) {
+      stats.bankroll = Math.round(value);
     } else if (label.includes("days")) {
       stats.daysActive = Math.round(value);
     }

@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     q: "Can I cancel anytime?",
-    a: "Yes, anytime. Cancellation is handled via Stripe's billing portal — one click. No refunds for partial months, no contracts, no commitment.",
+    a: "Yes, anytime. Cancellation is handled via Stripe's billing portal — one click. No contracts, no commitment.",
   },
   {
     q: "How is my bankroll handled?",

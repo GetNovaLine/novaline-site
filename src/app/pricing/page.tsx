@@ -24,7 +24,7 @@ export default function Pricing() {
         <div className="mx-auto max-w-5xl px-6 pb-12 pt-24 text-center md:pt-32">
           <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">Pricing</h1>
           <p className="mx-auto mt-4 max-w-2xl text-muted">
-            Pay monthly. Cancel anytime. No refunds for partial months. Founder pricing is limited and locked-in for life.
+            Pay monthly. Cancel anytime. Founder pricing is limited and locked-in for life.
           </p>
         </div>
       </section>

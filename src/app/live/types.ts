@@ -7,7 +7,15 @@ export type BetStatus =
   | "TRACKING"
   | "CLOSE"
   | "NEUTRAL"
-  | "DNP";
+  | "DNP"
+  // Final-result states — set after the bet is graded. Card renders a result
+  // overlay instead of live progress.
+  | "FINAL_WIN"
+  | "FINAL_LOSS"
+  | "FINAL_PUSH"
+  | "FINAL_VOID";
+
+export type BetResult = "win" | "loss" | "push" | "void" | null;
 
 export interface LiveBet {
   id: number;
@@ -32,6 +40,12 @@ export interface LiveBet {
   game_state_short: string; // "5th" / "Final" / "PRE"
   pace_projection: number | null;
   last_updated: string | null;
+
+  // Set after the bet is graded; null while live.
+  settled: boolean;
+  result: BetResult;
+  final_stat: number | null;
+  net_units: number | null;
 }
 
 export interface LiveApiResponse {

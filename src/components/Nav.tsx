@@ -4,6 +4,7 @@ import { SITE } from "@/lib/config";
 
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/live", label: "Live", live: true },
   { href: "/about", label: "How It Works" },
   { href: "/pricing", label: "Pricing" },
   { href: "/faq", label: "FAQ" },
@@ -22,8 +23,14 @@ export default function Nav() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-muted transition-colors hover:text-foreground"
+              className="flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-foreground"
             >
+              {link.live && (
+                <span
+                  aria-hidden
+                  className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-strong"
+                />
+              )}
               {link.label}
             </Link>
           ))}

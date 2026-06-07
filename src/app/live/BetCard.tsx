@@ -11,7 +11,7 @@ const STATUS_THEME: Record<BetStatus, { label: string; bg: string; text: string;
   NEUTRAL:     { label: "⏳ PRE-GAME",    bg: "bg-card",      text: "text-muted",  ring: "ring-card-border" },
   DNP:         { label: "🚫 DNP",         bg: "bg-card",      text: "text-muted",  ring: "ring-card-border" },
   FINAL_WIN:   { label: "🏆 WIN",         bg: "bg-strong/20", text: "text-strong", ring: "ring-strong/50" },
-  FINAL_LOSS:  { label: "💀 LOSS",        bg: "bg-weak/20",   text: "text-weak",   ring: "ring-weak/50" },
+  FINAL_LOSS:  { label: "📉 LOSS",        bg: "bg-weak/20",   text: "text-weak",   ring: "ring-weak/50" },
   FINAL_PUSH:  { label: "🤝 PUSH",        bg: "bg-card",      text: "text-muted",  ring: "ring-card-border" },
   FINAL_VOID:  { label: "🚫 VOID",        bg: "bg-card",      text: "text-muted",  ring: "ring-card-border" },
 };

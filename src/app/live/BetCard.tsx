@@ -63,8 +63,11 @@ export default function BetCard({ bet }: { bet: LiveBet }) {
           </h3>
           <div className="mt-0.5 text-sm text-muted">{propLabel}</div>
         </div>
-        <div className="shrink-0 rounded-full border border-card-border bg-background px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-muted">
-          {bet.game_state_short}
+        {/* Game state chip — shows the full state ("Top 5th" / "P2 · 5:23" /
+            "Q3 · 5:23" / "Final") so viewers can see the inning, period, or
+            clock at a glance. Uses tabular-nums so the clock doesn't jitter. */}
+        <div className="shrink-0 whitespace-nowrap rounded-full border border-card-border bg-background px-2.5 py-1 text-[11px] font-mono tabular-nums tracking-tight text-muted">
+          {bet.game_state}
         </div>
       </div>
 

@@ -33,6 +33,34 @@ function fmtUnits(units: number): string {
   return units >= 0 ? `+${units.toFixed(2)}u` : `${units.toFixed(2)}u`;
 }
 
+// Render an ISO datetime as a short "today/tomorrow/weekday + time" string in
+// the viewer's local timezone — used for pregame card chips to show when the
+// game starts instead of the generic "Pre-Game" label.
+function fmtCommenceTime(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "Pre-Game";
+  const now = new Date();
+  const sameDay =
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+  const isTomorrow =
+    date.getFullYear() === tomorrow.getFullYear() &&
+    date.getMonth() === tomorrow.getMonth() &&
+    date.getDate() === tomorrow.getDate();
+
+  const timeStr = date
+    .toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+    .replace(" ", "");
+
+  if (sameDay) return timeStr;
+  if (isTomorrow) return `Tmr ${timeStr}`;
+  const weekday = date.toLocaleDateString([], { weekday: "short" });
+  return `${weekday} ${timeStr}`;
+}
+
 export default function BetCard({ bet }: { bet: LiveBet }) {
   const theme = STATUS_THEME[bet.status] ?? STATUS_THEME.NEUTRAL;
   const propLabel = `${bet.market} ${bet.side} ${bet.line}`;
@@ -65,9 +93,14 @@ export default function BetCard({ bet }: { bet: LiveBet }) {
         </div>
         {/* Game state chip — shows the full state ("Top 5th" / "P2 · 5:23" /
             "Q3 · 5:23" / "Final") so viewers can see the inning, period, or
-            clock at a glance. Uses tabular-nums so the clock doesn't jitter. */}
+            clock at a glance. For pregame, swap the generic "Pre-Game" label
+            for the formatted start time ("8:06PM" / "Tmr 1:05PM") so viewers
+            know when the game tips off. Uses tabular-nums so the clock doesn't
+            jitter as digits change. */}
         <div className="shrink-0 whitespace-nowrap rounded-full border border-card-border bg-background px-2.5 py-1 text-[11px] font-mono tabular-nums tracking-tight text-muted">
-          {bet.game_state}
+          {bet.game_state === "Pre-Game" || bet.status === "NEUTRAL"
+            ? fmtCommenceTime(bet.commence_time)
+            : bet.game_state}
         </div>
       </div>
 

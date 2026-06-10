@@ -20,12 +20,16 @@ export const PAYMENT_LINKS = {
 
 // Auto-tracker — every alert that gets hearted in Telegram is appended live
 // by the backend service (see betting-alerts/sheets_sync.py). The `gid=` param
-// drops visitors on the "Summary" tab (topline stats + cumulative profit chart);
-// from there they can click into the "Public Tracker" tab for the bet-by-bet
-// log. The private Sheet1 with dollar stakes and Pinnacle prices is hidden
-// from the tab bar via the Sheets API — only the service account can see it.
+// drops visitors on the "Public Summary" tab — topline stats + cumulative
+// profit chart in UNITS (no dollar amounts, bankroll stays private). From
+// there they can click the "Public Tracker" tab for the bet-by-bet log.
+//
+// Hidden from public view (via Sheets API hidden flag):
+//   - Sheet1: private bet log with dollar stakes, Pinnacle prices, msg IDs
+//   - Summary: dollar-denominated summary (same numbers, but with $ amounts)
+//
 // If the link is changing again: GIDs come from sheets_sync._get_*_worksheet().id.
-export const TRACKER_URL = "https://docs.google.com/spreadsheets/d/17t5nqamV9kEcI9rXGxM36ivvpoXnrtD7qC8gEJq-Hho/edit?usp=sharing&gid=1772621636#gid=1772621636";
+export const TRACKER_URL = "https://docs.google.com/spreadsheets/d/17t5nqamV9kEcI9rXGxM36ivvpoXnrtD7qC8gEJq-Hho/edit?usp=sharing&gid=472332122#gid=472332122";
 
 // Fallback stats used if the auto-fetch from Google Sheets fails or env var isn't set.
 // To enable auto-pull: set NEXT_PUBLIC_STATS_CSV_URL env var in Vercel to the published

@@ -104,7 +104,8 @@ export default function About() {
         <div className="mt-12 rounded-2xl border border-card-border bg-card p-8 text-center">
           <h3 className="text-xl font-semibold">See the methodology in action</h3>
           <p className="mt-2 text-sm text-muted">
-            Every alert that&apos;s ever fired (with Pinnacle line, EV, stake, result) is in the public bet tracker.
+            Every alert that&apos;s ever fired (with Pinnacle line, EV, stake, result) is in the public bet tracker. Want the full technical breakdown with formulas?{" "}
+            <Link href="/methodology" className="text-accent underline underline-offset-4 hover:text-accent-hover">Read the methodology page →</Link>
           </p>
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a

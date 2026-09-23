@@ -176,25 +176,20 @@ true_p_home = p_home / overround
         <article className="mb-16">
           <div className="text-xs font-mono text-accent">05 · SIZING</div>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-            Tier-aware fractional Kelly
+            Fractional Kelly, capped at 2 units
           </h2>
           <p className="mt-4 text-muted">
             Kelly criterion assumes your <code className="rounded bg-card px-1.5 py-0.5 font-mono text-sm">true_prob</code>
-            {" "}estimate is exactly right. Reality has estimation noise, so we use fractional
-            Kelly plus a per-tier confidence multiplier:
+            {" "}estimate is exactly right. Reality has estimation noise, so we bet a fixed
+            fraction of full Kelly and cap every bet. Edge quality tier doesn&rsquo;t change the size:
           </p>
           <pre className="mt-4 overflow-x-auto rounded-lg border border-card-border bg-card p-4 font-mono text-sm">
-{`base_fraction = 0.375        # 3/8 Kelly (conservative default)
-max_bet_pct   = 5%           # never exceed this per bet
+{`bankroll      = 100u         # 1 unit = 1% of bankroll
+kelly_frac    = 0.375        # 3/8 Kelly (conservative default)
+max_units     = 2u           # hard cap on every bet
 
-tier_multipliers = {
-    "STRONG": 1.5,           # 0.563 × Kelly, cap = 7.5%
-    "MIXED":  1.0,           # 0.375 × Kelly, cap = 5.0%
-    "WEAK":   0.5,           # 0.188 × Kelly, cap = 2.5%
-}
-
-stake = bankroll * full_kelly * base_fraction * tier_mult
-stake = min(stake, bankroll * max_bet_pct * tier_mult)`}
+stake = bankroll * full_kelly * kelly_frac
+stake = min(stake, max_units)   # rounded to the nearest 0.25u`}
           </pre>
           <p className="mt-3 text-muted">
             Stakes shown in units where <strong className="text-foreground">1 unit = 1% of bankroll</strong>,

@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     q: "What sports and markets are covered?",
-    a: "MLB pitcher props (strikeouts, outs, earned runs, hits allowed) and batter total bases. NBA player props (points, assists, rebounds, threes). NHL player props (points, assists, shots on goal, goalie saves).",
+    a: "NFL player props (passing yards, completions, attempts, passing TDs, rushing yards and attempts, receptions, receiving yards). MLB pitcher props (strikeouts, outs, earned runs, hits allowed) and batter total bases. NBA player props (points, assists, rebounds, threes). NHL player props (points, assists, shots on goal, goalie saves).",
   },
   {
     q: "How does the founder pricing work?",

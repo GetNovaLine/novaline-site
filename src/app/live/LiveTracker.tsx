@@ -1,14 +1,15 @@
 "use client";
 
-// Client component for the /live page. Polls /api/live every 30s and renders
-// bet cards in a responsive grid, filterable by sport. Shows a "last updated
-// N seconds ago" chip so viewers can tell at a glance how fresh the data is.
+// Client component for the /live page. Polls /api/live every 15s, and refetches
+// immediately when the tab regains focus (mobile browsers pause timers in
+// background tabs). The "Updated Ns ago" chip is based on the server's
+// served_at, so it reflects how old the data actually is.
 
 import { useEffect, useMemo, useState } from "react";
 import BetCard from "./BetCard";
 import type { LiveApiResponse, LiveBet, BetStatus } from "./types";
 
-const POLL_INTERVAL_MS = 30_000;
+const POLL_INTERVAL_MS = 15_000;
 
 // Status sort order: live action first, finals at the bottom. This keeps the
 // most interesting cards above the fold when multiple bets are visible.
@@ -25,58 +26,71 @@ const STATUS_RANK: Record<BetStatus, number> = {
   FINAL_VOID: 9,
 };
 
-type SportFilter = "ALL" | "MLB" | "NBA" | "WNBA" | "NHL";
-const FILTERS: SportFilter[] = ["ALL", "MLB", "NBA", "WNBA", "NHL"];
+const FILTERS = ["ALL", "NFL", "MLB", "NBA", "WNBA", "NHL"] as const;
+type SportFilter = (typeof FILTERS)[number];
 
 export default function LiveTracker() {
   const [data, setData] = useState<LiveApiResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [lastFetch, setLastFetch] = useState<number>(Date.now());
+  const [dataTime, setDataTime] = useState<number | null>(null);
   const [secondsAgo, setSecondsAgo] = useState(0);
   const [activeFilter, setActiveFilter] = useState<SportFilter>("ALL");
 
-  // Fetch once on mount + on a timer
+  // Fetch on mount, on a timer, and whenever the tab becomes visible again.
   useEffect(() => {
     let cancelled = false;
+    let inFlight = false;
     async function fetchOnce() {
+      if (inFlight) return;
+      inFlight = true;
       try {
         const res = await fetch("/api/live", { cache: "no-store" });
         const json: LiveApiResponse = await res.json();
         if (cancelled) return;
         setData(json);
         setError(json.error ?? null);
-        setLastFetch(Date.now());
+        const served = Date.parse(json.served_at);
+        setDataTime(Number.isNaN(served) ? Date.now() : served);
       } catch (e) {
         if (cancelled) return;
         setError(e instanceof Error ? e.message : "fetch failed");
+      } finally {
+        inFlight = false;
       }
+    }
+    function onVisible() {
+      if (document.visibilityState === "visible") fetchOnce();
     }
     fetchOnce();
     const id = setInterval(fetchOnce, POLL_INTERVAL_MS);
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onVisible);
     return () => {
       cancelled = true;
       clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onVisible);
     };
   }, []);
 
-  // Update the "N seconds ago" counter every second without re-fetching
+  // Tick the "N seconds ago" counter every second without re-fetching.
   useEffect(() => {
-    const id = setInterval(() => {
-      setSecondsAgo(Math.floor((Date.now() - lastFetch) / 1000));
-    }, 1000);
+    if (dataTime === null) return;
+    const tick = () => setSecondsAgo(Math.max(0, Math.floor((Date.now() - dataTime) / 1000)));
+    tick();
+    const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [lastFetch]);
+  }, [dataTime]);
 
-  const allBets = data?.bets ?? [];
+  const allBets = useMemo(() => data?.bets ?? [], [data]);
 
   // Count bets per sport for filter chip badges. Computed once from the full
   // list so toggling a filter doesn't change the badge counts.
   const countsBySport = useMemo(() => {
-    const counts: Record<SportFilter, number> = { ALL: allBets.length, MLB: 0, NBA: 0, WNBA: 0, NHL: 0 };
+    const counts = Object.fromEntries(FILTERS.map((f) => [f, 0])) as Record<SportFilter, number>;
+    counts.ALL = allBets.length;
     for (const b of allBets) {
-      if (b.sport === "MLB" || b.sport === "NBA" || b.sport === "WNBA" || b.sport === "NHL") {
-        counts[b.sport] += 1;
-      }
+      if (b.sport in counts && b.sport !== "ALL") counts[b.sport as SportFilter] += 1;
     }
     return counts;
   }, [allBets]);
@@ -103,7 +117,7 @@ export default function LiveTracker() {
             Live <span className="text-accent">tracker</span>
           </h1>
           <p className="mt-2 text-sm text-muted">
-            Every active NovaLine bet, tracked in real time. Updates every 30 seconds.
+            Every active NovaLine bet, tracked in real time. Updates automatically — no need to refresh.
           </p>
         </div>
         <div className="shrink-0 text-right text-xs text-muted">
@@ -155,7 +169,7 @@ export default function LiveTracker() {
       {/* Error banner */}
       {error && (
         <div className="mb-6 rounded-xl border border-weak/30 bg-weak/10 p-4 text-sm text-weak">
-          ⚠️ Couldn&apos;t reach live data right now ({error}). Retrying every 30 seconds.
+          ⚠️ Couldn&apos;t reach live data right now ({error}). Retrying automatically.
         </div>
       )}
 
@@ -199,8 +213,8 @@ export default function LiveTracker() {
 
       {/* Footer caveat */}
       <p className="mt-12 text-center text-xs text-muted">
-        Live stats are pulled from official league sources (MLB Stats API, NHL API, ESPN).
-        Data may lag broadcast by 30-60 seconds. Bet outcomes are final only after the game ends.
+        Live stats are pulled from official league sources (MLB Stats API, NHL API, ESPN for NFL/NBA/WNBA).
+        Data may lag broadcast by 30-90 seconds. Bet outcomes are final only after the game ends.
       </p>
     </div>
   );

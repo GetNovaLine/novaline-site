@@ -40,7 +40,7 @@ export default function About() {
             For every prop, we compare Pinnacle&apos;s true probability to the offered prices at {BOOKS.join(", ")}. The book offering the best (most generous) price relative to true probability is identified automatically.
           </p>
           <p className="mt-3 text-muted">
-            Supported sports: {SPORTS.join(", ")}. Player prop markets only — pitcher stats, batter total bases, player points/assists/rebounds/threes, shots on goal, goalie saves.
+            Supported sports: {SPORTS.join(", ")}. Player prop markets only — NFL passing, rushing and receiving, pitcher stats, batter total bases, player points/assists/rebounds/threes, shots on goal, goalie saves.
           </p>
         </article>
 
@@ -84,7 +84,7 @@ export default function About() {
             Every alert includes a recommended stake sized using fractional Kelly (currently 3/8 Kelly). The stake is shown in <strong className="text-foreground">units</strong> — where 1 unit = 1% of your bankroll — so you can apply it to any bankroll size.
           </p>
           <p className="mt-3 text-muted">
-            All recommendations are capped at 5% of bankroll per bet to limit single-bet variance. You can always size smaller if you want.
+            Every recommendation is capped at 2 units (2% of bankroll) per bet to limit single-bet variance. You can always size smaller if you want.
           </p>
         </article>
 

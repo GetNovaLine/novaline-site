@@ -6,7 +6,7 @@ export const SITE = {
   name: "NovaLine",
   tagline: "+EV Player Prop Alerts",
   description:
-    "Pinnacle no-vig devig methodology applied to US sportsbooks. Real-time Discord alerts for MLB, NBA, NHL player props.",
+    "Pinnacle no-vig devig methodology applied to US sportsbooks. Real-time Discord alerts for NFL, MLB, NBA, NHL player props.",
   domain: "getnovaline.com",
   url: "https://getnovaline.com",
   email: "getnovaline@gmail.com",
@@ -36,11 +36,11 @@ export const TRACKER_URL = "https://docs.google.com/spreadsheets/d/17t5nqamV9kEc
 // CSV URL of your Summary tab. See src/lib/stats.ts for parser details.
 // To update manually: just change these numbers and commit.
 export const STATS = {
-  bets: 209,
-  roi: 10.24,
-  profit: 610,
-  bankroll: 2300, // used only to compute units up — never displayed
-  daysActive: 26,
+  bets: 0,
+  roi: 0,
+  profit: 0,
+  bankroll: 0, // used only to compute units up — never displayed
+  daysActive: 0,
 };
 
 export const BOOKS = [
@@ -52,4 +52,4 @@ export const BOOKS = [
   "Fanatics",
 ];
 
-export const SPORTS = ["MLB", "NBA", "NHL"];
+export const SPORTS = ["NFL", "MLB", "NBA", "NHL"];

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 const features = [
-  "Real-time Discord alerts (MLB, NBA, NHL player props)",
+  "Real-time Discord alerts (NFL, MLB, NBA, NHL player props)",
   "Edge Quality scoring (🟢 STRONG / 🟡 MIXED / 🔴 WEAK)",
   "Unit-sized stake recommendations (Kelly-based)",
   "All book lines on every alert (DK, FD, MGM, Caesars, ESPN BET, Fanatics)",

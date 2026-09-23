@@ -2,36 +2,38 @@
 // Route Handler means the browser fetches same-origin (no CORS), and the
 // backend stays on plain HTTP behind the firewall — no SSL setup needed.
 //
-// Cached for 5s at the edge so a busy /live page doesn't hammer the backend.
-// 30s client polling × 5s cache = at most one backend hit every 5s regardless
-// of how many viewers are looking at the page.
+// Must stay fully dynamic: any route-level `revalidate` turns this into an ISR
+// route, and Vercel then serves a STALE snapshot (observed 20+ minutes old)
+// while regenerating in the background — the live page looked frozen until a
+// hard refresh. The upstream FastAPI read is cheap, so every request goes
+// straight through.
 
 const UPSTREAM = process.env.LIVE_API_UPSTREAM ?? "http://159.69.95.135:8000/api/live";
 
-export const revalidate = 5;
+export const dynamic = "force-dynamic";
+
+const NO_STORE = { "Cache-Control": "no-store" };
 
 export async function GET() {
   try {
     const res = await fetch(UPSTREAM, {
       // Short timeout so a hung backend doesn't keep the page spinning.
       signal: AbortSignal.timeout(8000),
-      next: { revalidate: 5 },
+      cache: "no-store",
     });
     if (!res.ok) {
       return Response.json(
         { error: `upstream ${res.status}`, bets: [], bet_count: 0 },
-        { status: 502, headers: { "Cache-Control": "no-store" } },
+        { status: 502, headers: NO_STORE },
       );
     }
     const data = await res.json();
-    return Response.json(data, {
-      headers: { "Cache-Control": "public, max-age=5, s-maxage=5" },
-    });
+    return Response.json(data, { headers: NO_STORE });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "unknown";
     return Response.json(
       { error: `proxy: ${msg}`, bets: [], bet_count: 0 },
-      { status: 502, headers: { "Cache-Control": "no-store" } },
+      { status: 502, headers: NO_STORE },
     );
   }
 }

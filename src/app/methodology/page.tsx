@@ -176,7 +176,7 @@ true_p_home = p_home / overround
         <article className="mb-16">
           <div className="text-xs font-mono text-accent">05 · SIZING</div>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-            Fractional Kelly, capped at 2 units
+            Fractional Kelly, capped at 3 units
           </h2>
           <p className="mt-4 text-muted">
             Kelly criterion assumes your <code className="rounded bg-card px-1.5 py-0.5 font-mono text-sm">true_prob</code>
@@ -186,7 +186,7 @@ true_p_home = p_home / overround
           <pre className="mt-4 overflow-x-auto rounded-lg border border-card-border bg-card p-4 font-mono text-sm">
 {`bankroll      = 100u         # 1 unit = 1% of bankroll
 kelly_frac    = 0.375        # 3/8 Kelly (conservative default)
-max_units     = 2u           # hard cap on every bet
+max_units     = 3u           # hard cap on every bet
 
 stake = bankroll * full_kelly * kelly_frac
 stake = min(stake, max_units)   # rounded to the nearest 0.25u`}

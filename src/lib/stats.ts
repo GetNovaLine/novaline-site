@@ -58,22 +58,50 @@ export async function fetchStats(): Promise<Stats> {
   }
 }
 
+// Quote-aware split of one CSV line into fields.
+function splitCsvLine(line: string): string[] {
+  const fields: string[] = [];
+  let cur = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuotes) {
+      if (ch === '"' && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else if (ch === '"') {
+        inQuotes = false;
+      } else {
+        cur += ch;
+      }
+    } else if (ch === '"') {
+      inQuotes = true;
+    } else if (ch === ",") {
+      fields.push(cur);
+      cur = "";
+    } else {
+      cur += ch;
+    }
+  }
+  fields.push(cur);
+  return fields;
+}
+
 function parseCsv(csv: string): typeof FALLBACK & { unitsUp?: number } {
   const stats: typeof FALLBACK & { unitsUp?: number } = { ...FALLBACK };
   const lines = csv.trim().split(/\r?\n/);
 
   for (const line of lines) {
-    // Split on first comma only (in case values contain commas inside quotes)
-    const idx = line.indexOf(",");
-    if (idx < 0) continue;
-    const rawLabel = line.slice(0, idx).trim();
-    const rawValue = line.slice(idx + 1).trim();
+    // Only columns A (label) and B (value) matter. The tab also carries the
+    // CLV sparkline's hidden helper data in D:E (a date on every row), which
+    // must not bleed into the value — "Days,0,,,8/27" is 0 days, not 8.
+    const [rawLabel = "", rawValue = ""] = splitCsvLine(line).map((f) => f.trim());
     if (!rawLabel || !rawValue) continue;
 
-    const label = rawLabel.replace(/^["']|["']$/g, "").toLowerCase();
-    // Strip wrapping quotes + $ and , from the value; KEEP letters so we can
-    // detect the "u" suffix marking unit-formatted profits.
-    const valueStr = rawValue.replace(/^["']|["']$/g, "").replace(/[$,]/g, "");
+    const label = rawLabel.toLowerCase();
+    // Strip $ and thousands separators; KEEP letters so we can detect the
+    // "u" suffix marking unit-formatted profits.
+    const valueStr = rawValue.replace(/[$,]/g, "");
     const value = parseFloat(valueStr);
     if (isNaN(value)) continue;
 

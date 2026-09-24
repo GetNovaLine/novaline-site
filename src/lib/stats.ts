@@ -1,7 +1,13 @@
 /**
- * Auto-pull stats from a Google Sheets CSV export.
+ * Homepage stats. Primary source is the Hetzner box's /api/summary, computed
+ * straight from the bets DB (same math as the Public Summary sheet). The page
+ * renders with these and HomeStats re-fetches them in the browser, so a graded
+ * bet shows up on the next page load rather than after the ISR copy expires.
  *
- * To enable:
+ * Fallback: the Google Sheets CSV export below (slow and occasionally 502s,
+ * hence no longer primary), then the hardcoded values in config.ts.
+ *
+ * To enable the CSV fallback:
  *   1. Set Vercel env var NEXT_PUBLIC_STATS_CSV_URL to the export URL of the
  *      auto-tracker's Public Summary tab:
  *        https://docs.google.com/spreadsheets/d/<SHEET_ID>/export?format=csv&gid=<TAB_GID>
@@ -21,12 +27,49 @@
  *   "Bankroll"           → stats.bankroll
  *   "Days"               → stats.daysActive
  *
- * Fetched values are cached for 1 hour at the Next.js layer (revalidate: 3600).
+ * CSV values are cached for 1 hour at the Next.js layer (revalidate: 3600).
  */
 
 import { STATS as FALLBACK } from "./config";
 
 export type Stats = typeof FALLBACK & { unitsUp: number };
+
+export const SUMMARY_UPSTREAM =
+  process.env.SUMMARY_API_UPSTREAM ?? "http://159.69.95.135:8000/api/summary";
+
+/** Shape of /api/summary (upstream and the same-origin proxy). */
+export type SummaryResponse = {
+  served_at: string;
+  bets: number;
+  wins: number;
+  losses: number;
+  pushes: number;
+  roi: number;
+  units: number;
+  days: number;
+  error?: string;
+};
+
+export function statsFromSummary(s: SummaryResponse): Stats {
+  return { ...FALLBACK, bets: s.bets, roi: s.roi, daysActive: s.days, unitsUp: s.units };
+}
+
+async function fetchSummary(): Promise<Stats | null> {
+  try {
+    const res = await fetch(SUMMARY_UPSTREAM, {
+      next: { revalidate: 60 },
+      signal: AbortSignal.timeout(4000),
+    });
+    if (!res.ok) {
+      console.error("Summary API returned non-OK:", res.status);
+      return null;
+    }
+    return statsFromSummary(await res.json());
+  } catch (err) {
+    console.error("Summary API fetch failed, trying CSV:", err);
+    return null;
+  }
+}
 
 function computeUnits(s: typeof FALLBACK & { unitsUp?: number }): number {
   // If the CSV gave us units directly (Public Summary tab), use it — keep
@@ -38,6 +81,9 @@ function computeUnits(s: typeof FALLBACK & { unitsUp?: number }): number {
 }
 
 export async function fetchStats(): Promise<Stats> {
+  const live = await fetchSummary();
+  if (live) return live;
+
   const url = process.env.NEXT_PUBLIC_STATS_CSV_URL;
   if (!url) return { ...FALLBACK, unitsUp: computeUnits(FALLBACK) };
 

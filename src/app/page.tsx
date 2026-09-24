@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PAYMENT_LINKS, BOOKS, SPORTS, TRACKER_URL } from "@/lib/config";
 import { fetchStats } from "@/lib/stats";
+import HomeStats from "./HomeStats";
 
 export default async function Home() {
   const STATS = await fetchStats();
@@ -44,18 +45,15 @@ export default async function Home() {
       {/* Stats */}
       <section className="border-t border-card-border bg-card/50">
         <div className="mx-auto max-w-5xl px-6 py-12">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            <Stat label="Bets settled" value={STATS.bets.toString()} />
-            <Stat label="ROI" value={`${STATS.roi.toFixed(2)}%`} accent />
-            <Stat label="Units up" value={`${STATS.unitsUp >= 0 ? "+" : ""}${STATS.unitsUp.toFixed(2)}u`} />
-            <Stat label="Days tracked" value={STATS.daysActive.toString()} />
-          </div>
+          <HomeStats
+            initial={{ bets: STATS.bets, roi: STATS.roi, unitsUp: STATS.unitsUp, daysActive: STATS.daysActive }}
+          />
           <p className="mt-6 text-center text-xs text-muted">
             Live numbers from the{" "}
             <a href={TRACKER_URL} target="_blank" rel="noopener noreferrer" className="text-foreground underline">
               public bet tracker
             </a>
-            . Updated daily.
+            . Updated as each bet is graded.
           </p>
         </div>
       </section>
@@ -174,17 +172,6 @@ export default async function Home() {
         </div>
       </section>
     </>
-  );
-}
-
-function Stat({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
-  return (
-    <div className="text-center">
-      <div className={`text-3xl font-semibold tracking-tight md:text-4xl ${accent ? "text-accent" : "text-foreground"}`}>
-        {value}
-      </div>
-      <div className="mt-1 text-xs uppercase tracking-widest text-muted">{label}</div>
-    </div>
   );
 }
 
